@@ -1,8 +1,8 @@
 {
-    "title": "Title of Project",
-    "info": "Add info about project",
+    "title": "Lexington Parks and Recreation Areas",
+    "info": "This map displays location of parks and recreation areas in Lexington Kentucky.",
     "coordinates": [38, -84.5],
-    "author": "Do you want to add your name?",
+    "author": "Jessica Freeman",
     "link": "http://newmapsplus.uky.edu"
 
 }
