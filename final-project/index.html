@@ -44,6 +44,12 @@
             color: #ddd;
         }
 
+        h4 {
+            font-size: .7em;
+            font-style: italic;
+            margin: 0 0 0 0;
+        }
+
         a {
             color: #004A8B;
         }
@@ -148,53 +154,137 @@
     <button id="info-button" onclick="myInfo()">Information</button>
     <div id='footer'>
         <div><img src="https://uky-gis.github.io/graphics/logo-color-400px.png" class="footer-img">
-            <h1>Map title</h1>
-            Info about the map. Map created by <a href="https://github.com/tastyfreeze">Catographer</a> 😻.
+            <h1>Lexington Parks and Recreation Areas</h1>
+            This map displays parks in Lexington, Kentucky. Parks are symboloized by park type.
+            When you hover over a feature, you will find the parks name, type, address and size.
+            Park data was pulled from <a href="https://data.lexingtonky.gov/dataset/park">Lexington's Open Data
+                Portal</a>. Map created by <a href="https://github.com/jmfr236/lexington-parks">Jessica Freeman</a>.
         </div>
     </div>
 
-
+    <!-- add jQuery JS script -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
 
     <script>
-        const map = L.map('map').setView([38, -98], 5);
+        var map = L.map("map", options);
         let clicked = false
 
-        // Add shaded relief map
-        const options = {
-            minZoom: 0,
-            maxZoom: 9,
-            opacity: 1,
-            tms: true,
-            attribution: 'Elevation &copy; <a href="https://www.naturalearthdata.com/">Natural Earth</a>'
+        // Define map options
+        var options = {
+            zoomSnap: 0.1,
+            zoomControl: false,
         };
 
-        const tiles = L.tileLayer('https://outragegis.com/tiles/world/ne_v01/{z}/{x}/{y}.jpg', options).addTo(map);
-
-        // Add base map
-        const Stamen_TonerLite = L.tileLayer(
-            'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                subdomains: 'abcd',
-                minZoom: 0,
-                maxZoom: 15,
-                opacity: 0.5,
-                ext: 'png'
+        // Add basemap tile layer
+        const Esri_WorldImagery = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
             });
+        Esri_WorldImagery.addTo(map);
 
-        Stamen_TonerLite.addTo(map);
+        // Define common layer style
+        var commonStyles = {
+            color: "444",
+            weight: 1,
+            stroke: 1,
+            fillOpacity: .8
+        };
 
-        // Report zoom level
-
-        map.on("zoom", function () {
-            const zoomLevel = map.getZoom()
-            if (zoomLevel > 4) {
-                const reportZoom = `Current zoom level: ${zoomLevel}`
-                console.log(reportZoom)
+        // Define layers and their colors to place
+        var layerInfo = {
+            neighborhoodLayer: {
+                type: "NEIGHBORHOOD",
+                color: 'FFFF99'
+            },
+            miniparkLayer: {
+                type: "MINI PARK",
+                color: 'FF3333'
+            },
+            golfLayer: {
+                type: "GOLF COURSE",
+                color: '00FF80'
             }
-        })
+        };
+
+        var geoJsonLayer = {};
+        console.log(geoJsonLayer)
+        console.log(parkLayer)
+
+        //jQuery's getJSON() method using dot notation
+        var parkLayer = $.getJSON("data/lexington-parks.geojson", function (
+            data
+        ) {
+            // the data loaded from the file is accessible here within this function scope!
+            console.log(data);
+            console.log(data.features.properties)
+            // apply style rules
+            var dataLayer = L.geoJson(data, {
+                style: function (feature) {
+                    return {
+                        color: "#444",
+                        weight: 1,
+                        fillOpacity: .8,
+                        fillColor: "#1f78b4",
+                    };
+                },
+            });
+            // find zoom extent from new layer
+
+            console.log(data.features)
+            var zoomExtent = dataLayer.getBounds();
+
+            map.fitBounds(zoomExtent, {
+                minZoom: 0,
+                maxZoom: 2,
+            });
+            // Apply the extent to our map with a custom property
+            // that says max zoom on load will not exceed 8
+            // which adds margin around the state.
+            map.fitBounds([
+                [38.073665, -84.568858],
+                [37.990814, -84.445970]
+            ]);
+            dataLayer.addTo(map);
+
+            dataLayer.eachLayer(function (layer) {
+                // shorthand reference to properties
+                var props = layer.feature.properties;
+                var content = `<h3>${props.NAME}</h3`;
+                //console.log(props)
+                //console.log(props.NAME)
+
+                var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
+                    "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
+                    " Acres";
+                if (L.Browser.mobile) {
+                    layer.bindPopup(toolTipInfo);
+                } else {
+                    layer.bindPopup(toolTipInfo, {
+                        sticky: true
+                    });
+                };
+
+                layer.on('mouseover', function () {
+                    layer.bringToFront()
+                    layer.setStyle({
+                        color: 'red',
+                        weight: 4,
+                    })
+                });
+
+                layer.on('mouseout', function () {
+                    layer.bringToBack()
+                    layer.setStyle({
+                        color: '#444',
+                        weight: 1,
+                    })
+                })
+            });
+        });
 
         /* --------------- Toggle on/off info footer content ---------------  */
         function myInfo() {
