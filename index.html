@@ -236,7 +236,8 @@
                 //},
                 // exist in our first object
                 filter: function (feature) {
-                    if (feature.properties.PRTYPE[layerInfo[layer].type]) {
+                    if (feature.properties.PRTYPE == layerInfo[layer].type) {
+                        console.log(feature.properties.PRTYPE)
                         return feature;
                     }
                 },
