@@ -70,7 +70,7 @@
             border-radius: 5px;
             position: fixed;
             top: 11px;
-            right: 11px;
+            right: 160px;
             z-index: 9999;
             cursor: pointer;
         }
@@ -155,15 +155,18 @@
     <div id='footer'>
         <div><img src="https://uky-gis.github.io/graphics/logo-color-400px.png" class="footer-img">
             <h1>Lexington Parks and Recreation Areas</h1>
-            This map displays parks in Lexington, Kentucky. Parks are symboloized by park type.
+            This map displays parks in Lexington, Kentucky. Features are symboloized by park type.
             When you hover over a feature, you will find the parks name, type, address and size.
             Park data was pulled from <a href="https://data.lexingtonky.gov/dataset/park">Lexington's Open Data
-                Portal</a>. Map created by <a href="https://github.com/jmfr236/lexington-parks">Jessica Freeman</a>.
+                Portal</a>. This map does not display the following park types: Special Use, Historic Buildings, State
+            Owned, or Privately Owned. Map created by <a href="https://github.com/jmfr236/lexington-parks">Jessica
+                Freeman</a>.
         </div>
     </div>
 
     <!-- add jQuery JS script -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="data/lexington-parks.geojson"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -198,23 +201,72 @@
         var layerInfo = {
             neighborhoodLayer: {
                 type: "NEIGHBORHOOD",
-                color: 'FFFF99'
+                color: '#1f78b4'
+            },
+            commumityLayer: {
+                type: "COMMUNITY",
+                color: '#984ea3'
             },
             miniparkLayer: {
                 type: "MINI PARK",
-                color: 'FF3333'
+                color: '#e31a1c'
+            },
+            greenwayLayer: {
+                type: "NP\/GREENWAYS",
+                color: '#33a02c'
             },
             golfLayer: {
                 type: "GOLF COURSE",
-                color: '00FF80'
-            }
+                color: '#ff7f00'
+            },
         };
 
-        var geoJsonLayer = {};
-        console.log(geoJsonLayer)
-        console.log(parkLayer)
+        // Build empty JS Object
+        var geoJsonLayers = {};
+        console.log(geoJsonLayers)
+        console.log(layerInfo)
+        console.log(parks)
 
-        //jQuery's getJSON() method using dot notation
+        for (var layer in layerInfo) {
+            // Populate the second object with all features that
+            geoJsonLayers[layer] = L.geoJson(parks, {
+                // we convert to a layer
+                // geometryToLayer: function (feature, latlng) {
+                //    return L.circleMarker(latlng, commonStyles);
+                //},
+                // exist in our first object
+                filter: function (feature) {
+                    if (feature.properties.PRTYPE[layerInfo[layer].type]) {
+                        return feature;
+                    }
+                },
+                // and match the style given in first object
+                style: function (feature) {
+                    return {
+                        color: layerInfo[layer].color,
+                        fillColor: layerInfo[layer].color
+                    }
+                }
+            }).addTo(map);
+        }
+
+        // Source layer labels for layer list
+        var sourceLabels = {}
+
+        // loop through layerInfo
+        for (var layer in layerInfo) {
+            // build string for UI text
+            var str = `<b style='color:${layerInfo[layer].color }'>${layerInfo[layer].type}</b>`;
+            // create object property with pair
+            sourceLabels[str] = geoJsonLayers[layer];
+        }
+
+        // Layer list method
+        L.control.layers(null, sourceLabels, {
+            collapsed: false
+        }).addTo(map);
+
+        /*//jQuery's getJSON() method using dot notation
         var parkLayer = $.getJSON("data/lexington-parks.geojson", function (
             data
         ) {
@@ -231,61 +283,61 @@
                         fillColor: "#1f78b4",
                     };
                 },
-            });
-            // find zoom extent from new layer
+            }); */
+        // find zoom extent from new layer
 
-            console.log(data.features)
-            var zoomExtent = dataLayer.getBounds();
+        // console.log(data.features)
+        //var zoomExtent = dataLayer.getBounds();
 
-            map.fitBounds(zoomExtent, {
-                minZoom: 0,
-                maxZoom: 2,
-            });
-            // Apply the extent to our map with a custom property
-            // that says max zoom on load will not exceed 8
-            // which adds margin around the state.
-            map.fitBounds([
-                [38.073665, -84.568858],
-                [37.990814, -84.445970]
-            ]);
-            dataLayer.addTo(map);
+        //map.fitBounds(zoomExtent, {
+        // minZoom: 0,
+        //   maxZoom: 2,
+        //});
+        // Apply the extent to our map with a custom property
+        // that says max zoom on load will not exceed 8
+        // which adds margin around the state.
+        map.fitBounds([
+            [38.073665, -84.568858],
+            [37.990814, -84.445970]
+        ]);
+        //geoJsonLayers.addTo(map);
 
-            dataLayer.eachLayer(function (layer) {
-                // shorthand reference to properties
-                var props = layer.feature.properties;
-                var content = `<h3>${props.NAME}</h3`;
-                //console.log(props)
-                //console.log(props.NAME)
+        /*geoJsonLayers.eachLayer(function (layer) {
+            // shorthand reference to properties
+            var props = layer.feature.properties;
+            var content = `<h3>${props.NAME}</h3`;
+            //console.log(props)
+            //console.log(props.NAME)
 
-                var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
-                    "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
-                    " Acres";
-                if (L.Browser.mobile) {
-                    layer.bindPopup(toolTipInfo);
-                } else {
-                    layer.bindPopup(toolTipInfo, {
-                        sticky: true
-                    });
-                };
-
-                layer.on('mouseover', function () {
-                    layer.bringToFront()
-                    layer.setStyle({
-                        color: 'red',
-                        weight: 4,
-                    })
+            var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
+                "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
+                " Acres";
+            if (L.Browser.mobile) {
+                layer.bindPopup(toolTipInfo);
+            } else {
+                layer.bindPopup(toolTipInfo, {
+                    sticky: true
                 });
+            };
 
-                layer.on('mouseout', function () {
-                    layer.bringToBack()
-                    layer.setStyle({
-                        color: '#444',
-                        weight: 1,
-                    })
+            layer.on('mouseover', function () {
+                layer.bringToFront()
+                layer.setStyle({
+                    color: 'red',
+                    weight: 4,
                 })
             });
-        });
 
+            layer.on('mouseout', function () {
+                layer.bringToBack()
+                layer.setStyle({
+                    color: '#444',
+                    weight: 1,
+                })
+            })
+        });
+        //  });
+/*
         /* --------------- Toggle on/off info footer content ---------------  */
         function myInfo() {
             const x = document.getElementById('footer');
