@@ -236,7 +236,8 @@
                 //},
                 // exist in our first object
                 filter: function (feature) {
-                    if (feature.properties.PRTYPE[layerInfo[layer].type]) {
+                    if (feature.properties.PRTYPE == layerInfo[layer].type) {
+                        console.log(feature.properties.PRTYPE)
                         return feature;
                     }
                 },
@@ -256,7 +257,8 @@
         // loop through layerInfo
         for (var layer in layerInfo) {
             // build string for UI text
-            var str = `<b style='color:${layerInfo[layer].color }'>${layerInfo[layer].type}</b>`;
+            var convertCase = titleCase(layerInfo[layer].type)
+            var str = `<b style='color:${layerInfo[layer].color }'>${convertCase}</b>`;
             // create object property with pair
             sourceLabels[str] = geoJsonLayers[layer];
         }
@@ -337,7 +339,11 @@
             })
         });
         //  });
+
+        
 /*
+
+
         /* --------------- Toggle on/off info footer content ---------------  */
         function myInfo() {
             const x = document.getElementById('footer');
@@ -350,6 +356,14 @@
                 x.style.height = '33vh';
             }
             clicked = !clicked
+        }
+
+        function titleCase(string) {
+            var sentence = string.toLowerCase().split(" ");
+            for(var i = 0; i< sentence.length; i++){
+                sentence[i] = `${sentence[i][0].toUpperCase()}${sentence[i].slice(1)}`;
+            }
+            return sentence.join(" ")
         }
     </script>
 
