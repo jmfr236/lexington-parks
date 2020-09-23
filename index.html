@@ -1,389 +1,344 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title></title>
-    <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-      crossorigin=""
-    />
-    <link
-      href="http://fonts.googleapis.com/css?family=Lato"
-      rel="stylesheet"
-      type="text/css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <link href="http://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css" />
 
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background: #222;
-        font-family: Lato, sans-serif;
-        font-size: 100%;
-        color: #ddd;
-      }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #222;
+            font-family: Lato, sans-serif;
+            font-size: 100%;
+            color: #ddd;
+        }
 
-      header {
-        width: 80%;
-        margin: 10px auto 10px auto;
-      }
+        header {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
 
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-        background: rgba(63, 63, 63, 0.9);
-      }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            background: rgba(63, 63, 63, 0.9);
+        }
 
-      footer {
-        padding: 6px 10%;
-        width: 80%;
-      }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
 
-      p {
-        font-size: 1em;
-        color: #ddd;
-      }
+        p {
+            font-size: 1em;
+            color: #ddd;
+        }
 
-      h4 {
-        font-size: 0.7em;
-        font-style: italic;
-        margin: 0 0 0 0;
-      }
+        h4 {
+            font-size: 0.7em;
+            font-style: italic;
+            margin: 0 0 0 0;
+        }
 
-      a {
-        color: #004a8b;
-      }
+        a {
+            color: #004a8b;
+        }
 
-      a:hover {
-        color: rgb(67, 69, 71);
-        text-decoration: none;
-      }
+        a:hover {
+            color: rgb(67, 69, 71);
+            text-decoration: none;
+        }
 
-      #info-button {
-        padding: 8px 5px;
-        font-size: 0.9em;
-        font-weight: bolder;
-        border: 2px solid rgba(244, 244, 244, 0.2);
-        background: rgba(100, 100, 100, 0.9);
-        color: rgba(244, 244, 244, 0.8);
-        /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); */
-        border-radius: 5px;
-        position: fixed;
-        top: 11px;
-        right: 140px;
-        z-index: 9999;
-        cursor: pointer;
-      }
+        #info-button {
+            padding: 8px 5px;
+            font-size: 0.9em;
+            font-weight: bolder;
+            border: 2px solid rgba(244, 244, 244, 0.2);
+            background: rgba(100, 100, 100, 0.9);
+            color: rgba(244, 244, 244, 0.8);
+            /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); */
+            border-radius: 5px;
+            position: fixed;
+            top: 11px;
+            right: 140px;
+            z-index: 9999;
+            cursor: pointer;
+        }
 
-      #footer {
-        width: 100%;
-        background: rgba(244, 244, 244, 0.8);
-        color: rgba(20, 20, 20, 0.8);
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        height: 0px;
-        padding: 0px;
-        z-index: 9000;
-        position: absolute;
-        bottom: -10px;
-        overflow: scroll;
-      }
+        #footer {
+            width: 100%;
+            background: rgba(244, 244, 244, 0.8);
+            color: rgba(20, 20, 20, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            height: 0px;
+            padding: 0px;
+            z-index: 9000;
+            position: absolute;
+            bottom: -10px;
+            overflow: scroll;
+        }
 
-      #footer div {
-        padding: 10px;
-      }
+        #footer div {
+            padding: 10px;
+        }
 
-      #footer h1 {
-        font-size: 1.3em;
-        margin: 0 0 5px 0;
-      }
+        #footer h1 {
+            font-size: 1.3em;
+            margin: 0 0 5px 0;
+        }
 
-      .footer-img {
-        float: right;
-        height: 10vh;
-        margin: 10px;
-      }
+        .footer-img {
+            float: right;
+            height: 10vh;
+            margin: 10px;
+        }
 
-      .legend {
-        padding: 6px 8px;
-        font-size: 1em;
-        border: 2px solid rgba(244, 244, 244, 0.2);
-        background: rgba(100, 100, 100, 0.9);
-        color: rgba(244, 244, 244, 0.8);
-        border-radius: 5px;
-      }
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            border: 2px solid rgba(244, 244, 244, 0.2);
+            background: rgba(100, 100, 100, 0.9);
+            color: rgba(244, 244, 244, 0.8);
+            border-radius: 5px;
+        }
 
-      .legend h3 {
-        font-size: 1.1em;
-        font-weight: bolder;
-        color: #ddd;
-        margin: 0 0 10px 0;
-      }
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: bolder;
+            color: #ddd;
+            margin: 0 0 10px 0;
+        }
 
-      .legend span {
-        width: 20px;
-        height: 20px;
-        float: left;
-        margin: 0 10px 4px 0;
-      }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+        }
 
-      .legend label {
-        font-size: 1.1em;
-      }
+        .legend label {
+            font-size: 1.1em;
+        }
 
-      .legend label:after {
-        content: "";
-        display: block;
-        clear: both;
-      }
+        .legend label:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
 
-      .leaflet-popup-content {
-        max-width: 160px;
-      }
+        .leaflet-popup-content {
+            max-width: 160px;
+        }
 
-      .leaflet-bar a {
-        /* border: 2px solid rgba(244, 244, 244, 0.2); */
-        background: rgba(100, 100, 100, 0.9);
-        color: rgba(244, 244, 244, 0.8);
-      }
+        .leaflet-bar a {
+            /* border: 2px solid rgba(244, 244, 244, 0.2); */
+            background: rgba(100, 100, 100, 0.9);
+            color: rgba(244, 244, 244, 0.8);
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="map"></div>
     <button id="info-button" onclick="myInfo()">Information</button>
     <div id="footer">
-      <div>
-        <img
-          src="https://uky-gis.github.io/graphics/logo-color-400px.png"
-          class="footer-img"
-        />
-        <h1>Lexington Parks and Recreation Areas</h1>
-        This map displays parks in Lexington, Kentucky. Features are symboloized
-        by park type. When you hover over a feature, you will find the parks
-        name, type, address and size. Park data was pulled from
-        <a href="https://data.lexingtonky.gov/dataset/park"
-          >Lexington's Open Data Portal</a
-        >. This map does not display the following park types: Special Use,
-        Historic Buildings, State Owned, or Privately Owned. Map created by
-        <a href="https://github.com/jmfr236/lexington-parks">Jessica Freeman</a
-        >.
-      </div>
+        <div>
+            <img src="https://uky-gis.github.io/graphics/logo-color-400px.png" class="footer-img" />
+            <h1>Lexington Parks and Recreation Areas</h1>
+            This map displays parks in Lexington, Kentucky. Features are symboloized
+            by park type. When you hover over a feature, you will find the parks
+            name, type, address and size. Park data was pulled from
+            <a href="https://data.lexingtonky.gov/dataset/park">Lexington's Open Data Portal</a>. This map does not
+            display the following park types: Special Use,
+            Historic Buildings, State Owned, or Privately Owned. Map created by
+            <a href="https://github.com/jmfr236/lexington-parks">Jessica Freeman</a>.
+        </div>
     </div>
 
     <!-- add jQuery JS script -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="data/lexington-parks.geojson"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script
-      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-      crossorigin=""
-    ></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
 
     <script>
-      var map = L.map("map", options);
-      let clicked = false;
+        // Define map options
+        var map = L.map("map", options);
+        let clicked = false;
 
-      // Define map options
-      var options = {
-        zoomSnap: 0.1,
-        zoomControl: false,
-      };
+        var options = {
+            zoomSnap: 0.1,
+            zoomControl: false,
+        };
 
-      // Add basemap tile layer
-      const Esri_WorldImagery = L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {
-          attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
-        }
-      );
-      Esri_WorldImagery.addTo(map);
+        // Define map bounds
+        map.fitBounds([
+            [38.073665, -84.568858],
+            [37.990814, -84.44597],
+        ]);
 
-      // Define common layer style
-      var commonStyles = {
-        color: "444",
-        weight: 1,
-        stroke: 1,
-        fillOpacity: 0.8,
-      };
-
-      // Define layers and their colors to place
-      var layerInfo = {
-        neighborhoodLayer: {
-          type: "NEIGHBORHOOD",
-          color: "#1f78b4",
-        },
-        commumityLayer: {
-          type: "COMMUNITY",
-          color: "#984ea3",
-        },
-        miniparkLayer: {
-          type: "MINI PARK",
-          color: "#e31a1c",
-        },
-        greenwayLayer: {
-          type: "NP\/GREENWAYS",
-          color: "#33a02c",
-        },
-        golfLayer: {
-          type: "GOLF COURSE",
-          color: "#ff7f00",
-        },
-      };
-
-      // Build empty JS Object
-      var geoJsonLayers = {};
-      console.log(geoJsonLayers);
-      console.log(layerInfo);
-      console.log(parks);
-
-      for (var layer in layerInfo) {
-        // Populate the second object with all features that
-        geoJsonLayers[layer] = L.geoJson(parks, {
-          // we convert to a layer
-          // geometryToLayer: function (feature, latlng) {
-          //    return L.circleMarker(latlng, commonStyles);
-          //},
-          // exist in our first object
-          filter: function (feature) {
-            if (feature.properties.PRTYPE == layerInfo[layer].type) {
-              return feature;
+        // Add basemap tile layer
+        const Esri_WorldImagery = L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+                attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
             }
-          },
-          // and match the style given in first object
-          style: function (feature) {
-            return {
-              color: layerInfo[layer].color,
-              fillColor: layerInfo[layer].color,
-            };
-          },
-        }).addTo(map);
-      }
+        );
+        Esri_WorldImagery.addTo(map);
 
-      // Source layer labels for layer list
-      var sourceLabels = {};
+        // Define layers and their colors to place
+        var layerInfo = {
+            neighborhoodLayer: {
+                type: "NEIGHBORHOOD",
+                color: "#1f78b4",
+            },
+            commumityLayer: {
+                type: "COMMUNITY",
+                color: "#984ea3",
+            },
+            miniparkLayer: {
+                type: "MINI PARK",
+                color: "#e31a1c",
+            },
+            greenwayLayer: {
+                type: "NP\/GREENWAYS",
+                color: "#33a02c",
+            },
+            golfLayer: {
+                type: "GOLF COURSE",
+                color: "#ff7f00",
+            },
+        };
 
-      // loop through layerInfo
-      for (var layer in layerInfo) {
-        // build string for UI text
-        var convertCase = titleCase(layerInfo[layer].type);
-        var str = `<b style='color:${layerInfo[layer].color}'>${convertCase}</b>`;
-        // create object property with pair
-        sourceLabels[str] = geoJsonLayers[layer];
-      }
+        // Build empty JS Object
+        var geoJsonLayers = {};
+        //console.log(geoJsonLayers);
+        //console.log(layerInfo);
+        //console.log(parks);
 
-      // Layer list method
-      L.control
-        .layers(null, sourceLabels, {
-          collapsed: false,
-        })
-        .addTo(map);
-
-      /*//jQuery's getJSON() method using dot notation
-              var parkLayer = $.getJSON("data/lexington-parks.geojson", function (
-                  data
-              ) {
-                  // the data loaded from the file is accessible here within this function scope!
-                  console.log(data);
-                  console.log(data.features.properties)
-                  // apply style rules
-                  var dataLayer = L.geoJson(data, {
-                      style: function (feature) {
-                          return {
-                              color: "#444",
-                              weight: 1,
-                              fillOpacity: .8,
-                              fillColor: "#1f78b4",
-                          };
-                      },
-                  }); */
-      // find zoom extent from new layer
-
-      // console.log(data.features)
-      //var zoomExtent = dataLayer.getBounds();
-
-      //map.fitBounds(zoomExtent, {
-      // minZoom: 0,
-      //   maxZoom: 2,
-      //});
-      // Apply the extent to our map with a custom property
-      // that says max zoom on load will not exceed 8
-      // which adds margin around the state.
-      map.fitBounds([
-        [38.073665, -84.568858],
-        [37.990814, -84.44597],
-      ]);
-      //geoJsonLayers.addTo(map);
-
-      /*geoJsonLayers.eachLayer(function (layer) {
-                  // shorthand reference to properties
-                  var props = layer.feature.properties;
-                  var content = `<h3>${props.NAME}</h3`;
-                  //console.log(props)
-                  //console.log(props.NAME)
-
-                  var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
-                      "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
-                      " Acres";
-                  if (L.Browser.mobile) {
-                      layer.bindPopup(toolTipInfo);
-                  } else {
-                      layer.bindPopup(toolTipInfo, {
-                          sticky: true
-                      });
-                  };
-
-                  layer.on('mouseover', function () {
-                      layer.bringToFront()
-                      layer.setStyle({
-                          color: 'red',
-                          weight: 4,
-                      })
-                  });
-
-                  layer.on('mouseout', function () {
-                      layer.bringToBack()
-                      layer.setStyle({
-                          color: '#444',
-                          weight: 1,
-                      })
-                  })
-              });
-              //  });
-      /*
-              /* --------------- Toggle on/off info footer content ---------------  */
-      function myInfo() {
-        const x = document.getElementById("footer");
-        const y = document.getElementById("info-button");
-        if (clicked) {
-          y.style.background = "rgba(100, 100, 100, 0.9)";
-          x.style.height = "0px";
-        } else {
-          y.style.background = "rgba(79, 146, 17, 0.8)";
-          x.style.height = "33vh";
+        // Loop through object containing geojson layers
+        for (var layer in layerInfo) {
+            // Populate the second object with all features that
+            geoJsonLayers[layer] = L.geoJson(parks, {
+                // exist in our first object
+                filter: function (feature) {
+                    if (feature.properties.PRTYPE == layerInfo[layer].type) {
+                        return feature;
+                    }
+                },
+                // and match the style given in first object
+                style: function (feature) {
+                    return {
+                        weight: 2,
+                        color: layerInfo[layer].color,
+                        fillColor: layerInfo[layer].color,
+                        fillOpacity: .5
+                    };
+                },
+            }).addTo(map);
         }
-        clicked = !clicked;
-      }
 
-      function titleCase(string) {
-        var sentence = string.toLowerCase().split(" ");
-        for (var i = 0; i < sentence.length; i++) {
-          sentence[i] = `${sentence[i][0].toUpperCase()}${sentence[i].slice(
+
+        // Source layer labels for layer list
+        var sourceLabels = {};
+
+        // loop through layerInfo
+        for (var layer in layerInfo) {
+            // build string for UI text
+            var convertCase = titleCase(layerInfo[layer].type);
+            var str = `<b style='color:${layerInfo[layer].color}'>${convertCase}</b>`;
+            // create object property with pair
+            sourceLabels[str] = geoJsonLayers[layer];
+        }
+
+        // Layer list method
+        L.control
+            .layers(null, sourceLabels, {
+                collapsed: false,
+            })
+            .addTo(map);
+
+        // Loop through object containing geojson layers
+        for (var layer in layerInfo) {
+            geoJsonLayers[layer].eachLayer(function (layer) {
+                // shorthand reference to properties
+                var props = layer.feature.properties;
+                var content = `<h3>${props.NAME}</h3`;
+                //console.log(props)
+                //console.log(props.NAME)
+
+                var toolTipInfo =
+                    "<b>" +
+                    props["NAME"] +
+                    "</b><br>" +
+                    "<h4>" +
+                    props["PRTYPE"] +
+                    "</h4><br>" +
+                    props["ADDRESS"] +
+                    "<br>" +
+                    "This park is " +
+                    props["ACREAGE"] +
+                    " Acres";
+                if (L.Browser.mobile) {
+                    layer.bindPopup(toolTipInfo);
+                } else {
+                    layer.bindPopup(toolTipInfo, {
+                        sticky: true,
+                    });
+                }
+
+                layer.on("mouseover", function () {
+                    layer.bringToFront();
+                    layer.setStyle({
+                        color: "yellow",
+                        weight: 3,
+                    });
+                });
+
+                layer.on("mouseout", function () {
+                    layer.bringToBack();
+                    layer.setStyle({
+                        color: "black",
+                        weight: 3,
+                    });
+                });
+            });
+        };
+        /* --------------- Toggle on/off info footer content ---------------  */
+        function myInfo() {
+            const x = document.getElementById("footer");
+            const y = document.getElementById("info-button");
+            if (clicked) {
+                y.style.background = "rgba(100, 100, 100, 0.9)";
+                x.style.height = "0px";
+            } else {
+                y.style.background = "rgba(218, 165, 32, 0.8)";
+                x.style.height = "33vh";
+            }
+            clicked = !clicked;
+        }
+
+        function titleCase(string) {
+            var sentence = string.toLowerCase().split(" ");
+            for (var i = 0; i < sentence.length; i++) {
+                sentence[i] = `${sentence[i][0].toUpperCase()}${sentence[i].slice(
             1
           )}`;
+            }
+            return sentence.join(" ");
         }
-        return sentence.join(" ");
-      }
     </script>
-  </body>
+</body>
+
 </html>
