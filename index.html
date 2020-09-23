@@ -79,7 +79,7 @@
         border-radius: 5px;
         position: fixed;
         top: 11px;
-        right: 160px;
+        right: 140px;
         z-index: 9999;
         cursor: pointer;
       }
@@ -190,7 +190,6 @@
     ></script>
 
     <script>
-<<<<<<< HEAD
       var map = L.map("map", options);
       let clicked = false;
 
@@ -257,7 +256,7 @@
           //},
           // exist in our first object
           filter: function (feature) {
-            if (feature.properties.PRTYPE[layerInfo[layer].type]) {
+            if (feature.properties.PRTYPE == layerInfo[layer].type) {
               return feature;
             }
           },
@@ -268,101 +267,6 @@
               fillColor: layerInfo[layer].color,
             };
           },
-=======
-        var map = L.map("map", options);
-        let clicked = false
-
-        // Define map options
-        var options = {
-            zoomSnap: 0.1,
-            zoomControl: false,
-        };
-
-        // Add basemap tile layer
-        const Esri_WorldImagery = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-            });
-        Esri_WorldImagery.addTo(map);
-
-        // Define common layer style
-        var commonStyles = {
-            color: "444",
-            weight: 1,
-            stroke: 1,
-            fillOpacity: .8
-        };
-
-        // Define layers and their colors to place
-        var layerInfo = {
-            neighborhoodLayer: {
-                type: "NEIGHBORHOOD",
-                color: '#1f78b4'
-            },
-            commumityLayer: {
-                type: "COMMUNITY",
-                color: '#984ea3'
-            },
-            miniparkLayer: {
-                type: "MINI PARK",
-                color: '#e31a1c'
-            },
-            greenwayLayer: {
-                type: "NP\/GREENWAYS",
-                color: '#33a02c'
-            },
-            golfLayer: {
-                type: "GOLF COURSE",
-                color: '#ff7f00'
-            },
-        };
-
-        // Build empty JS Object
-        var geoJsonLayers = {};
-        console.log(geoJsonLayers)
-        console.log(layerInfo)
-        console.log(parks)
-
-        for (var layer in layerInfo) {
-            // Populate the second object with all features that
-            geoJsonLayers[layer] = L.geoJson(parks, {
-                // we convert to a layer
-                // geometryToLayer: function (feature, latlng) {
-                //    return L.circleMarker(latlng, commonStyles);
-                //},
-                // exist in our first object
-                filter: function (feature) {
-                    if (feature.properties.PRTYPE == layerInfo[layer].type) {
-                        console.log(feature.properties.PRTYPE)
-                        return feature;
-                    }
-                },
-                // and match the style given in first object
-                style: function (feature) {
-                    return {
-                        color: layerInfo[layer].color,
-                        fillColor: layerInfo[layer].color
-                    }
-                }
-            }).addTo(map);
-        }
-
-        // Source layer labels for layer list
-        var sourceLabels = {}
-
-        // loop through layerInfo
-        for (var layer in layerInfo) {
-            // build string for UI text
-            var convertCase = titleCase(layerInfo[layer].type)
-            var str = `<b style='color:${layerInfo[layer].color }'>${convertCase}</b>`;
-            // create object property with pair
-            sourceLabels[str] = geoJsonLayers[layer];
-        }
-
-        // Layer list method
-        L.control.layers(null, sourceLabels, {
-            collapsed: false
->>>>>>> ev-01
         }).addTo(map);
       }
 
@@ -372,7 +276,8 @@
       // loop through layerInfo
       for (var layer in layerInfo) {
         // build string for UI text
-        var str = `<b style='color:${layerInfo[layer].color}'>${layerInfo[layer].type}</b>`;
+        var convertCase = titleCase(layerInfo[layer].type);
+        var str = `<b style='color:${layerInfo[layer].color}'>${convertCase}</b>`;
         // create object property with pair
         sourceLabels[str] = geoJsonLayers[layer];
       }
@@ -385,23 +290,23 @@
         .addTo(map);
 
       /*//jQuery's getJSON() method using dot notation
-        var parkLayer = $.getJSON("data/lexington-parks.geojson", function (
-            data
-        ) {
-            // the data loaded from the file is accessible here within this function scope!
-            console.log(data);
-            console.log(data.features.properties)
-            // apply style rules
-            var dataLayer = L.geoJson(data, {
-                style: function (feature) {
-                    return {
-                        color: "#444",
-                        weight: 1,
-                        fillOpacity: .8,
-                        fillColor: "#1f78b4",
-                    };
-                },
-            }); */
+              var parkLayer = $.getJSON("data/lexington-parks.geojson", function (
+                  data
+              ) {
+                  // the data loaded from the file is accessible here within this function scope!
+                  console.log(data);
+                  console.log(data.features.properties)
+                  // apply style rules
+                  var dataLayer = L.geoJson(data, {
+                      style: function (feature) {
+                          return {
+                              color: "#444",
+                              weight: 1,
+                              fillOpacity: .8,
+                              fillColor: "#1f78b4",
+                          };
+                      },
+                  }); */
       // find zoom extent from new layer
 
       // console.log(data.features)
@@ -421,46 +326,42 @@
       //geoJsonLayers.addTo(map);
 
       /*geoJsonLayers.eachLayer(function (layer) {
-            // shorthand reference to properties
-            var props = layer.feature.properties;
-            var content = `<h3>${props.NAME}</h3`;
-            //console.log(props)
-            //console.log(props.NAME)
+                  // shorthand reference to properties
+                  var props = layer.feature.properties;
+                  var content = `<h3>${props.NAME}</h3`;
+                  //console.log(props)
+                  //console.log(props.NAME)
 
-            var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
-                "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
-                " Acres";
-            if (L.Browser.mobile) {
-                layer.bindPopup(toolTipInfo);
-            } else {
-                layer.bindPopup(toolTipInfo, {
-                    sticky: true
-                });
-            };
+                  var toolTipInfo = "<b>" + props["NAME"] + "</b><br>" + "<h4>" + props["PRTYPE"] +
+                      "</h4><br>" + props["ADDRESS"] + "<br>" + "This park is " + props["ACREAGE"] +
+                      " Acres";
+                  if (L.Browser.mobile) {
+                      layer.bindPopup(toolTipInfo);
+                  } else {
+                      layer.bindPopup(toolTipInfo, {
+                          sticky: true
+                      });
+                  };
 
-            layer.on('mouseover', function () {
-                layer.bringToFront()
-                layer.setStyle({
-                    color: 'red',
-                    weight: 4,
-                })
-            });
+                  layer.on('mouseover', function () {
+                      layer.bringToFront()
+                      layer.setStyle({
+                          color: 'red',
+                          weight: 4,
+                      })
+                  });
 
-            layer.on('mouseout', function () {
-                layer.bringToBack()
-                layer.setStyle({
-                    color: '#444',
-                    weight: 1,
-                })
-            })
-        });
-        //  });
-
-        
-/*
-
-
-        /* --------------- Toggle on/off info footer content ---------------  */
+                  layer.on('mouseout', function () {
+                      layer.bringToBack()
+                      layer.setStyle({
+                          color: '#444',
+                          weight: 1,
+                      })
+                  })
+              });
+              //  });
+      /*
+              /* --------------- Toggle on/off info footer content ---------------  */
       function myInfo() {
         const x = document.getElementById("footer");
         const y = document.getElementById("info-button");
@@ -471,19 +372,18 @@
           y.style.background = "rgba(79, 146, 17, 0.8)";
           x.style.height = "33vh";
         }
-<<<<<<< HEAD
         clicked = !clicked;
       }
-=======
 
-        function titleCase(string) {
-            var sentence = string.toLowerCase().split(" ");
-            for(var i = 0; i< sentence.length; i++){
-                sentence[i] = `${sentence[i][0].toUpperCase()}${sentence[i].slice(1)}`;
-            }
-            return sentence.join(" ")
+      function titleCase(string) {
+        var sentence = string.toLowerCase().split(" ");
+        for (var i = 0; i < sentence.length; i++) {
+          sentence[i] = `${sentence[i][0].toUpperCase()}${sentence[i].slice(
+            1
+          )}`;
         }
->>>>>>> ev-01
+        return sentence.join(" ");
+      }
     </script>
   </body>
 </html>
