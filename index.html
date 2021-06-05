@@ -241,10 +241,10 @@
                 // and match the style given in first object
                 style: function (feature) {
                     return {
-                        weight: 2,
-                        color: layerInfo[layer].color,
+                        weight: 1,
+                        color: "black",
                         fillColor: layerInfo[layer].color,
-                        fillOpacity: .5
+                        fillOpacity: .65
                     };
                 },
             }).addTo(map);
@@ -311,7 +311,7 @@
                     layer.bringToBack();
                     layer.setStyle({
                         color: "black",
-                        weight: 3,
+                        weight: 1,
                     });
                 });
             });
